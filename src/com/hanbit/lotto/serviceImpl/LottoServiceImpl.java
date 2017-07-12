@@ -11,36 +11,30 @@ public class LottoServiceImpl implements LottoService {
 	@Override
 	public void setCount(LottoBean bean) {
 		// 몇줄을 출력할 것인지 로또 수 계산(최대값 5줄)
-		int x=bean.getMoney()/1000;
-		if (x >=5) {
-			x=5;
-		}
-		else {
-			x = bean.getMoney()/1000;
-		}
-		this.count = x;
+		count = (bean.getMoney()/1000>=5)?5:bean.getMoney()/1000;
 	}
 	
 	@Override
 	public void setLottors(LottoBean bean) {
 		setCount(bean);
-		lottos = new int[count][6];
-		int i=0;
-		for (count=0;count<lottos.length;count++) {
-				while(true) {
+		lottos = new int [count][6];
+		
+		for (int count=0;count<lottos.length;count++) {
+			for (int i=0;i<6;i++) {
 				int num = bean.getNumber();
-				if (isDuplication(count, num)) {
-						continue;// 트루이면 위로 다시
+				if (!isDuplication(count, num)) {
+					lottos[count][i] = num;
 				}
-				lottos[count][i] = num;
-				i++;
-				
-				if (i==lottos[count].length) {
-					sort(lottos[count]);
-					i=0;
-					break;
+				else {
+					i--;
 				}
-			}
+				/*밑의 코딩은 위의 else {i--;} 와 같아진다
+				 * 더 복잡하므로 간단한 녀석으로 사용해준다
+				 * else if (isDuplication(count, num)) {
+					num = bean.getNumber();
+					lottos[count][i] = num;
+				}*/
+			}sort(lottos[count]);
 		}
 	}
 
@@ -56,8 +50,7 @@ public class LottoServiceImpl implements LottoService {
 		boolean flag = false;
 		
 		for (int i=0;i<lottos[count].length;i++) {
-			
-			if (lottos[count][i] == num) {
+			if (num==lottos[count][i]) {
 				flag=true;
 			}
 		}
